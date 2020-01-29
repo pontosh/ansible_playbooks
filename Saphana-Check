@@ -1,0 +1,22 @@
+---
+- name: Executa do hanaCheck e retorna o arquivo da saida
+  hosts: LISTA_DE_HOSTS
+  remote_user: root
+  tasks:
+     - name: Copiar e Extrair arquivo
+       unarchive:
+          src: /tmp/saphana-checks-1911.0-1.b309_gec1027d5.tgz
+          dest: /root/
+          owner: root
+          mode: '0750'
+
+     - name: Executa o script de Check do hana
+       shell: /root/saphana-checks/bin/saphana-check.sh >>/root/saphana-checks/saida_hana_check.txt
+
+     - name: Copia o arquivo de saida para sua maquina
+       fetch:
+          src: /root/saphana-checks/saida_hana_check.txt
+          dest: /home/meu_usuario/{{inventory_hostname}}_hana_check.txt
+          owner: meu_usuario
+          mode: '0750'
+          flat: yes
